@@ -81,35 +81,11 @@ func (p Puzzle) Col(col int) (result [SIZE]Cell) {
 //	3 4 5
 //	6 7 8
 func (p Puzzle) Box(box int) (result [SIZE]Cell) {
-	row := box / BOX * BOX
-	col := box % BOX * BOX
-
-	for i := range BOX {
-		r := row + i
-		roffset := r * SIZE
-		for j := range BOX {
-			c := col + j
-			index := roffset + c
-			result[i*BOX+j] = p[index]
-		}
+	for i := range SIZE {
+		result[i] = p[boxIndex(box, i)]
 	}
 
 	return
-}
-
-func (p Puzzle) RowOf(index int) int {
-	return index / SIZE
-}
-
-func (p Puzzle) ColOf(index int) int {
-	return index % SIZE
-}
-
-func (p Puzzle) BoxOf(index int) int {
-	row := p.RowOf(index) / BOX
-	col := p.ColOf(index) / BOX
-
-	return row*BOX + col
 }
 
 func (p Puzzle) Valid() bool {
@@ -121,8 +97,37 @@ func (p Puzzle) Valid() bool {
 	return true
 }
 
+func rowOf(index int) int {
+	return index / SIZE
+}
+
+func colOf(index int) int {
+	return index % SIZE
+}
+
+func boxOf(index int) int {
+	row := rowOf(index) / BOX
+	col := colOf(index) / BOX
+
+	return row*BOX + col
+}
+
 func rowIndex(r, i int) int { return r*SIZE + i }
 func colIndex(c, i int) int { return i*SIZE + c }
+func boxIndex(b, i int) int {
+	row := b / BOX * BOX
+	col := b % BOX * BOX
+
+	bi := i / BOX
+	bj := i % BOX
+
+	r := row + bi
+	roffset := r * SIZE
+
+	c := col + bj
+	index := roffset + c
+	return index
+}
 
 // nodup checks that there are no duplicates in the array, ignoring 0.
 func nodup(row [SIZE]Cell) bool {

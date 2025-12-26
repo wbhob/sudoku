@@ -145,22 +145,20 @@ func Test_RowOf(t *testing.T) {
 		got, want int
 	}
 
-	puzzle1 := NewPuzzle(testdata.Puzzle1)
-
 	tests := []test{
 		{
 			name: "RowOf(0)",
-			got:  puzzle1.RowOf(0),
+			got:  rowOf(0),
 			want: 0,
 		},
 		{
 			name: "RowOf(8)",
-			got:  puzzle1.RowOf(8),
+			got:  rowOf(8),
 			want: 0,
 		},
 		{
 			name: "RowOf(80)",
-			got:  puzzle1.RowOf(80),
+			got:  rowOf(80),
 			want: 8,
 		},
 	}
@@ -178,22 +176,20 @@ func Test_ColOf(t *testing.T) {
 		got, want int
 	}
 
-	puzzle1 := NewPuzzle(testdata.Puzzle1)
-
 	tests := []test{
 		{
 			name: "ColOf(0)",
-			got:  puzzle1.ColOf(0),
+			got:  colOf(0),
 			want: 0,
 		},
 		{
 			name: "ColOf(8)",
-			got:  puzzle1.ColOf(8),
+			got:  colOf(8),
 			want: 8,
 		},
 		{
 			name: "ColOf(80)",
-			got:  puzzle1.ColOf(80),
+			got:  colOf(80),
 			want: 8,
 		},
 	}
@@ -211,22 +207,20 @@ func Test_BoxOf(t *testing.T) {
 		got, want int
 	}
 
-	puzzle1 := NewPuzzle(testdata.Puzzle1)
-
 	tests := []test{
 		{
 			name: "BoxOf(0)",
-			got:  puzzle1.BoxOf(0),
+			got:  boxOf(0),
 			want: 0,
 		},
 		{
 			name: "BoxOf(8)",
-			got:  puzzle1.BoxOf(8),
+			got:  boxOf(8),
 			want: 2,
 		},
 		{
 			name: "BoxOf(80)",
-			got:  puzzle1.BoxOf(80),
+			got:  boxOf(80),
 			want: 8,
 		},
 	}

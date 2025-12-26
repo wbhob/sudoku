@@ -2,31 +2,67 @@ package sudoku
 
 type Candidates [CELLS]CandidateMask
 
-type CandidateMask uint
+func CandidatesFromPuzzle(p Puzzle) Candidates {
+	var rowUseds, colUseds, boxUseds [SIZE]CandidateMask
 
-func bit(d Cell) CandidateMask {
-	return 1 << d
-}
-
-func (m CandidateMask) Has(d Cell) bool {
-	return d != 0 && m&bit(d) != 0
-}
-
-func (m *CandidateMask) Remove(d Cell) {
-	*m &^= bit(d)
-}
-
-func (m CandidateMask) IsSolved() bool {
-	// exactly one bit set, and not zero
-	return m != 0 && (m&(m-1)) == 0
-}
-
-func (m CandidateMask) Count() int {
-	var count int
-	for i := Cell(1); i <= SIZE; i++ {
-		if m&bit(i) != 0 {
-			count++
+	for i := range SIZE {
+		row := p.Row(i)
+		col := p.Col(i)
+		box := p.Box(i)
+		for j := range SIZE {
+			rowUseds[i] |= 1 << row[j] &^ 1
+			colUseds[i] |= 1 << col[j] &^ 1
+			boxUseds[i] |= 1 << box[j] &^ 1
 		}
 	}
-	return count
+
+	var candidates Candidates
+	for cell := range CELLS {
+		if p[cell] != 0 {
+			candidates[cell] = 1 << p[cell]
+			continue
+		}
+
+		r := rowUseds[rowOf(cell)]
+		c := colUseds[colOf(cell)]
+		b := boxUseds[boxOf(cell)]
+
+		used := r | c | b
+
+		candidates[cell] = allCandidates &^ used
+	}
+
+	return candidates
+}
+
+func (c *Candidates) Assign(index int, d Cell) {
+	row := rowOf(index)
+	col := colOf(index)
+	box := boxOf(index)
+
+	// index in row = col
+	// index in col = row
+	bi := (row%BOX)*BOX + (col % BOX) // 0..8
+
+	for i := range SIZE {
+		rindex := rowIndex(row, i)
+		cindex := colIndex(col, i)
+		bindex := boxIndex(box, i)
+
+		if i != col && !c[rindex].IsSolved() {
+			c.Eliminate(rindex, d)
+		}
+
+		if i != row && !c[cindex].IsSolved() {
+			c.Eliminate(cindex, d)
+		}
+
+		if i != bi && !c[bindex].IsSolved() {
+			c.Eliminate(bindex, d)
+		}
+	}
+}
+
+func (c *Candidates) Eliminate(index int, d Cell) {
+	c[index].Remove(d)
 }

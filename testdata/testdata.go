@@ -7,3 +7,6 @@ var Puzzle1 string
 
 //go:embed solved.txt
 var SolvedPuzzle string
+
+//go:embed almostsolved.txt
+var AlmostSolvedPuzzle string
