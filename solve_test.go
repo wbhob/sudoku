@@ -1,6 +1,7 @@
 package sudoku
 
 import (
+	"math/rand"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -43,5 +44,24 @@ func BenchmarkSolve(b *testing.B) {
 
 	for b.Loop() {
 		_, _ = Solve(puzzle1)
+	}
+}
+
+func BenchmarkSolveMany(b *testing.B) {
+	const count = 2048
+	const clues = 23
+
+	rng := rand.New(rand.NewSource(rand.Int63()))
+
+	puzzles := make([]Puzzle, count)
+	for i := range count {
+		puzzles[i] = generateQuick(rng, clues)
+	}
+
+	b.ResetTimer()
+
+	for b.Loop() {
+		puzzle := puzzles[rng.Int()%2048]
+		_, _ = Solve(puzzle)
 	}
 }
