@@ -35,34 +35,43 @@ func CandidatesFromPuzzle(p Puzzle) Candidates {
 	return candidates
 }
 
-func (c *Candidates) Assign(index int, d Cell) {
-	row := rowOf(index)
-	col := colOf(index)
-	box := boxOf(index)
-
-	// index in row = col
-	// index in col = row
-	bi := (row%BOX)*BOX + (col % BOX) // 0..8
-
-	for i := range SIZE {
-		rindex := rowIndex(row, i)
-		cindex := colIndex(col, i)
-		bindex := boxIndex(box, i)
-
-		if i != col && !c[rindex].IsSolved() {
-			c.Eliminate(rindex, d)
-		}
-
-		if i != row && !c[cindex].IsSolved() {
-			c.Eliminate(cindex, d)
-		}
-
-		if i != bi && !c[bindex].IsSolved() {
-			c.Eliminate(bindex, d)
-		}
+// Assign assigns the cell at index i to digit d. Returns true if the set was valid,
+// false if the cell can't be assigned to d.
+func (c *Candidates) Assign(i int, d Cell) bool {
+	if d == 0 || d > SIZE || c[i] == 0 {
+		return false
 	}
+
+	mask := bit(d)
+
+	// if already set, no op
+	if c[i] == mask {
+		return true
+	}
+
+	if c[i]&mask == 0 {
+		return false
+	}
+
+	c[i] = mask
+	return true
 }
 
-func (c *Candidates) Eliminate(index int, d Cell) {
+func (c *Candidates) Eliminate(index int, d Cell) Effect {
+	old := c[index]
 	c[index].Remove(d)
+
+	if c[index] == old {
+		return EffectNone
+	}
+
+	if c[index].IsSolved() {
+		return EffectChanged | EffectSolved
+	}
+
+	if c[index].Count() == 0 {
+		return EffectChanged | EffectContradiction
+	}
+
+	return EffectChanged
 }

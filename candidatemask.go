@@ -1,6 +1,8 @@
 package sudoku
 
-type CandidateMask uint32
+import "math/bits"
+
+type CandidateMask uint16
 
 // valid bits are 1..SIZE. 0 bit is unused and over SIZE is unused.
 // roughly speaking. 2^SIZE will be 10000000
@@ -26,11 +28,10 @@ func (m CandidateMask) IsSolved() bool {
 }
 
 func (m CandidateMask) Count() int {
-	var count int
-	for i := Cell(1); i <= SIZE; i++ {
-		if m&bit(i) != 0 {
-			count++
-		}
-	}
-	return count
+	return bits.OnesCount16(uint16(m))
+}
+
+func (m CandidateMask) Solution() Cell {
+	// caller must ensure IsSolved() == true
+	return Cell(bits.TrailingZeros16(uint16(m)))
 }

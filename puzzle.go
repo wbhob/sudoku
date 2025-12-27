@@ -56,9 +56,8 @@ func (p Puzzle) String() string {
 	return s
 }
 
-func (p *Puzzle) Set(row, col int, val Cell) {
-	index := row*SIZE + col
-	p[index] = Cell(val)
+func (p *Puzzle) Set(i int, val Cell) {
+	p[i] = Cell(val)
 }
 
 func (p Puzzle) Row(row int) (result [SIZE]Cell) {
@@ -86,6 +85,20 @@ func (p Puzzle) Box(box int) (result [SIZE]Cell) {
 	}
 
 	return
+}
+
+func (p Puzzle) IsSolved() bool {
+	for i := range p {
+		if p[i] == 0 {
+			return false
+		}
+	}
+
+	if !p.Valid() {
+		return false
+	}
+
+	return true
 }
 
 func (p Puzzle) Valid() bool {
